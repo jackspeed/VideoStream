@@ -16,7 +16,6 @@ import android.widget.VideoView;
 import com.blankj.utilcode.util.ScreenUtils;
 import com.ycj.videostream.R;
 import com.ycj.videostream.dao.OnDismissListener;
-import com.ycj.videostream.entity.PersonInfo;
 import com.ycj.videostream.request.Info;
 import com.ycj.videostream.request.InputData;
 import com.ycj.videostream.utils.RtspSurfaceRender;
@@ -53,9 +52,13 @@ public class VideoActivity extends BaseActivity implements View.OnClickListener,
             stopPlaybackVideo();
             startStreamVideo();
         } else if ("1".equals(result)) {
-            showImageDialog(new PersonInfo(1), this);
+            // 需求二使用
+            //showImageDialog(new PersonInfo(1), this);
+            onDismiss(1);
         } else if ("2".equals(result)) {
-            showImageDialog(new PersonInfo(2), this);
+            // 需求二使用
+            //showImageDialog(new PersonInfo(2), this);
+            onDismiss(2);
         } else if ("3".equals(result)) {
             onDismiss(1);
         }
@@ -110,7 +113,7 @@ public class VideoActivity extends BaseActivity implements View.OnClickListener,
         ScreenUtils.setFullScreen(this);
         inputData = (InputData) getIntent().getSerializableExtra("inputData");
         if (inputData == null) {
-            streamUrl = "rtmp://live.hkstv.hk.lxdns.com/live/hks";
+            streamUrl = "rtsp://184.72.239.149/vod/mp4://BigBuckBunny_175k.mov";
         } else {
             streamUrl = inputData.getStreamUrl();
         }
