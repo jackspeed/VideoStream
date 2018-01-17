@@ -55,7 +55,7 @@ public class VideoActivity extends BaseActivity implements View.OnClickListener,
         } else if ("1".equals(result)) {
             showImageDialog(new PersonInfo(1), this);
         } else if ("2".equals(result)) {
-            showImageDialog(new PersonInfo(1), this);
+            showImageDialog(new PersonInfo(2), this);
         } else if ("3".equals(result)) {
             onDismiss(1);
         }
