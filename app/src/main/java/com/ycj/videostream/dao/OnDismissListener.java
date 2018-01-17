@@ -6,5 +6,5 @@ package com.ycj.videostream.dao;
  * @date 2018-01-17 14:59
  */
 public interface OnDismissListener {
-    void onDismiss();
+    void onDismiss(int showType);
 }

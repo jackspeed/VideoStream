@@ -11,13 +11,13 @@ public class Info {
 
     public static String testInfo() {
         Random r = new Random();
-        int a = r.nextInt(2);
-        if (a == 0) {
-            return null;
+        int a = r.nextInt(20);
+        if (a == 2) {
+            return "2";
         } else if (a == 1) {
             return "1";
         } else {
-            return "2";
+            return null;
         }
     }
 

@@ -45,7 +45,7 @@ public class BaseActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
     }
 
-    public void showImageDialog(PersonInfo info, final OnDismissListener onDismissListener) {
+    public void showImageDialog(final PersonInfo info, final OnDismissListener onDismissListener) {
         try {
             hideImageDialog();
             showImageDialog = new AlertDialog.Builder(this).create();
@@ -68,7 +68,7 @@ public class BaseActivity extends AppCompatActivity {
                 @Override
                 public void run() {
                     hideImageDialog();
-                    onDismissListener.onDismiss();
+                    onDismissListener.onDismiss(info.getShowType());
                 }
             }, 3000);
         } catch (Exception e) {

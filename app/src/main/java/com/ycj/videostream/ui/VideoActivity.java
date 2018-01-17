@@ -15,6 +15,8 @@ import android.widget.VideoView;
 
 import com.blankj.utilcode.util.ScreenUtils;
 import com.ycj.videostream.R;
+import com.ycj.videostream.dao.OnDismissListener;
+import com.ycj.videostream.entity.PersonInfo;
 import com.ycj.videostream.request.Info;
 import com.ycj.videostream.request.InputData;
 import com.ycj.videostream.utils.RtspSurfaceRender;
@@ -28,51 +30,59 @@ import java.lang.ref.WeakReference;
  * @date 2018-01-16 20:06
  */
 
-public class VideoActivity extends BaseActivity implements View.OnClickListener {
+public class VideoActivity extends BaseActivity implements View.OnClickListener, OnDismissListener {
     public String streamUrl;
     private GLSurfaceView mSurfaceView;
     private RtspSurfaceRender mRender;
     private FrameLayout frameLayout;
     private VideoView videoView;
-    private int gender;
     private Button playBtn;
-
     private long delayMillis = 1000;
     private InputData inputData;
 
     private void messageAction() {
         String result;
         if (inputData == null) {
-            delayMillis = 8000;
             result = Info.testInfo();
         } else {
             result = Info.getInfo(inputData.getServerUrl(), inputData.getUserName(), inputData.getPassword());
         }
         if (videoView.isPlaying()) {
 
-        } else if (result == null) {
-            if (videoView.getVisibility() == View.VISIBLE) {
-                stopPlaybackVideo();
-                startStreamVideo();
-            }
+        } else if (result == null && videoView.getVisibility() == View.VISIBLE) {
+            stopPlaybackVideo();
+            startStreamVideo();
         } else if ("1".equals(result)) {
-            gender = 1;
-            closeStreamVideo();
-            startLocalView();
+            showImageDialog(new PersonInfo(1), this);
         } else if ("2".equals(result)) {
-            gender = 2;
-            closeStreamVideo();
-            startLocalView();
+            showImageDialog(new PersonInfo(1), this);
         } else if ("3".equals(result)) {
-            gender = 1;
-            closeStreamVideo();
-            startLocalView();
-            showLongToast("服务器地址不正确或账号密码错误");
+            onDismiss(1);
         }
+        System.out.println(result + "    **********************");
         mHandler.sendEmptyMessageDelayed(0, delayMillis);
     }
 
     private MyHandler mHandler = new MyHandler(this);
+
+    @Override
+    public void onDismiss(int showType) {
+        switch (showType) {
+            case 1:
+                closeStreamVideo();
+                startLocalView(1);
+                break;
+            case 2:
+                closeStreamVideo();
+                startLocalView(2);
+                break;
+            default:
+                closeStreamVideo();
+                startLocalView(1);
+                showLongToast("服务器地址不正确或账号密码错误");
+                break;
+        }
+    }
 
     private class MyHandler extends Handler {
         /**
@@ -173,10 +183,13 @@ public class VideoActivity extends BaseActivity implements View.OnClickListener 
         });
     }
 
-    private void startLocalView() {
+    private void startLocalView(int type) {
         try {
+            if (videoView.getVisibility() == View.VISIBLE) {
+                return;
+            }
             Uri uri;
-            if (gender == 2) {
+            if (type == 2) {
                 uri = Uri.parse("android.resource://" + getPackageName() + "/raw/" + R.raw.female);
             } else {
                 uri = Uri.parse("android.resource://" + getPackageName() + "/raw/" + R.raw.male);
@@ -199,22 +212,10 @@ public class VideoActivity extends BaseActivity implements View.OnClickListener 
         }
     }
 
-    @Override
-    protected void onResume() {
-        super.onResume();
-//        mSurfaceView.onResume();
-    }
-
-    @Override
-    protected void onPause() {
-        super.onPause();
-//        mSurfaceView.onPause();
-    }
 
     @Override
     protected void onDestroy() {
         try {
-//            handler.removeCallbacksAndMessages(null);
             mHandler.removeCallbacksAndMessages(null);
             stopPlaybackVideo();
             closeStreamVideo();
@@ -229,7 +230,7 @@ public class VideoActivity extends BaseActivity implements View.OnClickListener 
         try {
             if (videoView.getVisibility() == View.GONE) {
                 closeStreamVideo();
-                startLocalView();
+                startLocalView(1);
                 return;
             }
             stopPlaybackVideo();
