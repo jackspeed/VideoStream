@@ -13,11 +13,13 @@ import android.widget.Button;
 import android.widget.FrameLayout;
 import android.widget.VideoView;
 
+import com.ycj.videostream.R;
 import com.ycj.videostream.request.Info;
 import com.ycj.videostream.request.InputData;
-import com.ycj.videostream.view.JackVideoView;
-import com.ycj.videostream.R;
 import com.ycj.videostream.utils.RtspSurfaceRender;
+import com.ycj.videostream.view.JackVideoView;
+
+import java.lang.ref.WeakReference;
 
 /**
  * @author ycj
@@ -26,7 +28,7 @@ import com.ycj.videostream.utils.RtspSurfaceRender;
  */
 
 public class VideoActivity extends BaseActivity implements View.OnClickListener {
-    public String URL;
+    public String streamUrl;
     private GLSurfaceView mSurfaceView;
     private RtspSurfaceRender mRender;
     private FrameLayout frameLayout;
@@ -35,53 +37,72 @@ public class VideoActivity extends BaseActivity implements View.OnClickListener 
     private Button playBtn;
 
     private long delayMillis = 1000;
-    private final Handler handler = new Handler() {
+    private InputData inputData;
+
+    private void messageAction() {
+        String result;
+        if (inputData == null) {
+            delayMillis = 8000;
+            result = Info.testInfo();
+        } else {
+            result = Info.getInfo(inputData.getServerUrl(), inputData.getUserName(), inputData.getPassword());
+        }
+        if (videoView.isPlaying()) {
+
+        } else if (result == null) {
+            if (videoView.getVisibility() == View.VISIBLE) {
+                stopPlaybackVideo();
+                startStreamVideo();
+            }
+        } else if ("1".equals(result)) {
+            gender = 1;
+            closeStreamVideo();
+            startLocalView();
+        } else if ("2".equals(result)) {
+            gender = 2;
+            closeStreamVideo();
+            startLocalView();
+        } else if ("3".equals(result)) {
+            gender = 1;
+            closeStreamVideo();
+            startLocalView();
+            showLongToast("服务器地址不正确或账号密码错误");
+        }
+        mHandler.sendEmptyMessageDelayed(0, delayMillis);
+    }
+
+    private MyHandler mHandler = new MyHandler(this);
+
+    private class MyHandler extends Handler {
+        /**
+         * 弱引用 ，防止内存泄露
+         */
+        private WeakReference<VideoActivity> weakReference;
+
+        MyHandler(VideoActivity handlerMemoryActivity) {
+            weakReference = new WeakReference<>(handlerMemoryActivity);
+        }
+
         @Override
         public void handleMessage(Message msg) {
             super.handleMessage(msg);
-            String result;
-            if (inputData == null) {
-                delayMillis = 8000;
-                result = Info.testInfo();
-            } else {
-                result = Info.getInfo(inputData.getServerUrl(), inputData.getUserName(), inputData.getPassword());
+            VideoActivity handlerMemoryActivity = weakReference.get();
+            if (handlerMemoryActivity != null) {
+                messageAction();
             }
-            if (videoView.isPlaying()) {
-
-            } else if (result == null) {
-                if (videoView.getVisibility() == View.VISIBLE) {
-                    stopPlaybackVideo();
-                    startStreamVideo();
-                }
-            } else if ("1".equals(result)) {
-                gender = 1;
-                closeStreamVideo();
-                startLocalView();
-            } else if ("2".equals(result)) {
-                gender = 2;
-                closeStreamVideo();
-                startLocalView();
-            } else if ("3".equals(result)) {
-                gender = 1;
-                closeStreamVideo();
-                startLocalView();
-                showLongToast("服务器地址不正确或账号密码错误");
-            }
-            sendEmptyMessageDelayed(0, delayMillis);
         }
-    };
-    private InputData inputData;
+    }
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         inputData = (InputData) getIntent().getSerializableExtra("inputData");
         if (inputData == null) {
-            URL = "rtmp://live.hkstv.hk.lxdns.com/live/hks";
+            streamUrl = "rtmp://live.hkstv.hk.lxdns.com/live/hks";
         } else {
-            URL = inputData.getStreamUrl();
+            streamUrl = inputData.getStreamUrl();
         }
-        handler.sendEmptyMessageDelayed(0, 1000);
+        mHandler.sendEmptyMessageDelayed(0, 1000);
         initView();
         startStreamVideo();
     }
@@ -96,7 +117,7 @@ public class VideoActivity extends BaseActivity implements View.OnClickListener 
         mSurfaceView.setEGLContextClientVersion(3);
         mSurfaceView.refreshDrawableState();
         mRender = new RtspSurfaceRender(mSurfaceView);
-        mRender.setRtspUrl(URL);
+        mRender.setRtspUrl(streamUrl);
         mSurfaceView.setRenderer(mRender);
         mSurfaceView.setRenderMode(GLSurfaceView.RENDERMODE_WHEN_DIRTY);
         frameLayout.removeAllViews();
@@ -191,6 +212,8 @@ public class VideoActivity extends BaseActivity implements View.OnClickListener 
     @Override
     protected void onDestroy() {
         try {
+//            handler.removeCallbacksAndMessages(null);
+            mHandler.removeCallbacksAndMessages(null);
             stopPlaybackVideo();
             closeStreamVideo();
         } catch (Exception e) {
