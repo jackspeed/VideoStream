@@ -4,6 +4,8 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 
+import com.ycj.videostream.dao.OnDismissListener;
+import com.ycj.videostream.entity.PersonInfo;
 import com.ycj.videostream.request.InputData;
 import com.ycj.videostream.R;
 import com.ycj.videostream.dao.InputCallBack;
@@ -18,7 +20,13 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
         findViewById(R.id.main_tv).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                startActivity(new Intent(MainActivity.this, VideoActivity.class));
+                showImageDialog(new PersonInfo(), new OnDismissListener() {
+                    @Override
+                    public void onDismiss() {
+                        System.out.println("onDismiss()");
+                    }
+                });
+//                startActivity(new Intent(MainActivity.this, VideoActivity.class));
             }
         });
 
