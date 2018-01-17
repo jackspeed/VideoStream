@@ -13,6 +13,7 @@ import android.widget.Button;
 import android.widget.FrameLayout;
 import android.widget.VideoView;
 
+import com.blankj.utilcode.util.ScreenUtils;
 import com.ycj.videostream.R;
 import com.ycj.videostream.request.Info;
 import com.ycj.videostream.request.InputData;
@@ -96,6 +97,7 @@ public class VideoActivity extends BaseActivity implements View.OnClickListener 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        ScreenUtils.setFullScreen(this);
         inputData = (InputData) getIntent().getSerializableExtra("inputData");
         if (inputData == null) {
             streamUrl = "rtmp://live.hkstv.hk.lxdns.com/live/hks";
