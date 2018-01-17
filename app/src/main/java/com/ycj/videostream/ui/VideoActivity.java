@@ -113,7 +113,8 @@ public class VideoActivity extends BaseActivity implements View.OnClickListener,
         ScreenUtils.setFullScreen(this);
         inputData = (InputData) getIntent().getSerializableExtra("inputData");
         if (inputData == null) {
-            streamUrl = "rtsp://184.72.239.149/vod/mp4://BigBuckBunny_175k.mov";
+            streamUrl = "rtmp://live.hkstv.hk.lxdns.com/live/hks";
+//            streamUrl = "rtsp://184.72.239.149/vod/mp4://BigBuckBunny_175k.mov";
         } else {
             streamUrl = inputData.getStreamUrl();
         }
