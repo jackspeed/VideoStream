@@ -1,4 +1,4 @@
-package com.ycj.videostream;
+package com.ycj.videostream.utils;
 
 import android.graphics.Bitmap;
 import android.opengl.GLSurfaceView;

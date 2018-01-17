@@ -2,6 +2,9 @@ package com.ycj.videostream;
 
 import android.app.Application;
 
+import com.blankj.utilcode.util.Utils;
+import com.ycj.videostream.utils.AppUtils;
+
 /**
  * @author ycj
  * @version V1.0 <>
@@ -12,6 +15,7 @@ public class MyApplication extends Application {
     @Override
     public void onCreate() {
         super.onCreate();
+        Utils.init(this);
         AppUtils.setmContext(this);
     }
 }

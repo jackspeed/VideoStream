@@ -4,14 +4,13 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="com.ycj.videostream.MainActivity">
+    tools:context="com.ycj.videostream.ui.MainActivity">
 
     <FrameLayout
         android:id="@+id/frame_layout"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:visibility="visible" />
-
     <Button
         android:id="@+id/btn_play"
         android:layout_width="match_parent"
